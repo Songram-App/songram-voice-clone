@@ -1,0 +1,9 @@
+Flask
+torch
+librosa
+numpy
+soundfile
+pydub
+faster_whisper
+whisper_timestamped
+gradio
