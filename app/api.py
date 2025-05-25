@@ -3,10 +3,16 @@ from app.services.voice_cloning_service import VoiceCloningService
 import os
 
 app = Flask(__name__)
-voice_cloning_service = VoiceCloningService()
 
 # Configure the output directory for saving reference audio files
 app.config['OUTPUT_DIR'] = 'app/output'
+
+# Initialize the VoiceCloningService with configuration
+voice_cloning_service = VoiceCloningService(
+    checkpoints_dir=app.config['CHECKPOINTS_DIR'],
+    device=app.config['DEVICE'],
+    output_dir=app.config['OUTPUT_DIR']
+)
 
 @app.route('/clone-voice', methods=['POST'])
 def clone_voice():

@@ -7,3 +7,4 @@ pydub
 faster_whisper
 whisper_timestamped
 gradio
+botocore==1.29.0

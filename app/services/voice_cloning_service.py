@@ -1,36 +1,23 @@
-from flask import current_app
 import os
-from melo.api import TTS
-from openvoice.api import ToneColorConverter
+from MeloTTS.melo.api import TTS
 
 class VoiceCloningService:
-    def __init__(self):
-        # Initialize MeloTTS for base speaker synthesis
-        self.base_tts = TTS(
-            os.path.join(current_app.config['CHECKPOINTS_DIR'], 'base_speakers'),
-            device=current_app.config['DEVICE']
-        )
+    def __init__(self, checkpoints_dir, device, output_dir):
+        self.checkpoints_dir = checkpoints_dir
+        self.device = device
+        self.output_dir = output_dir
 
-        # Initialize ToneColorConverter for voice cloning
-        self.tone_color_converter = ToneColorConverter(
-            os.path.join(current_app.config['CHECKPOINTS_DIR'], 'converter/config.json'),
-            device=current_app.config['DEVICE']
-        )
-        self.tone_color_converter.load_ckpt(
-            os.path.join(current_app.config['CHECKPOINTS_DIR'], 'converter/checkpoint.pth')
-        )
+    def clone_voice_and_synthesize(self, reference_audio_path, lyrics, target_language, speaker):
+        # Initialize MeloTTS for the specified language and device
+        tts = TTS(language=target_language, device=self.device)
 
-    def clone_voice_and_synthesize(self, reference_audio_path, lyrics, target_language):
-        # Extract speaker embedding from reference audio
-        speaker_embedding = self.tone_color_converter.extract_speaker_embedding(reference_audio_path)
+        # Extract speaker ID
+        speaker_ids = tts.hps.data.spk2id
+        if speaker not in speaker_ids:
+            raise ValueError(f"Speaker '{speaker}' not found for language '{target_language}'.")
 
-        # Generate audio using MeloTTS with the cloned voice
-        output_audio_path = os.path.join(current_app.config['OUTPUT_DIR'], 'output.wav')
-        self.base_tts.tts(
-            text=lyrics,
-            output_path=output_audio_path,
-            speaker_embedding=speaker_embedding,
-            language=target_language
-        )
+        # Generate audio using MeloTTS
+        output_audio_path = os.path.join(self.output_dir, 'output.wav')
+        tts.tts_to_file(lyrics, speaker_ids[speaker], output_audio_path)
 
         return output_audio_path
