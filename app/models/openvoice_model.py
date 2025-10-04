@@ -31,12 +31,9 @@ class OpenVoiceModel:
         print(f"Synthesizing text: '{text}' using MeloTTS and OpenVoice V2 tone color conversion")
         tts = TTS(language=language, device=self.device)
         speaker_ids = tts.hps.data.spk2id
-        # Lowercase and dash-normalize the base_speaker_key for file lookup
         normalized_key = base_speaker_key.lower().replace('_', '-')
-        # Try to match the normalized key to available .pth files
         available_embeddings = [os.path.splitext(f)[0] for f in os.listdir(self.base_speakers_dir) if f.endswith('.pth')]
         if normalized_key not in available_embeddings:
-            # Try to fallback to a default English speaker if language is English
             if language.lower().startswith('en'):
                 fallback = 'en-newest'
                 if fallback in available_embeddings:
@@ -45,7 +42,6 @@ class OpenVoiceModel:
                     normalized_key = available_embeddings[0]
             else:
                 normalized_key = available_embeddings[0]
-        # Get the speaker_id from the dict, fallback to the first available
         if normalized_key in speaker_ids:
             speaker_id = speaker_ids[normalized_key]
         else:
@@ -63,7 +59,6 @@ class OpenVoiceModel:
             output_path=output_path,
             message="@MyShell"
         )
-        # Normalize output audio volume to -1 dBFS
         try:
             audio = AudioSegment.from_wav(output_path)
             change_in_dBFS = -1.0 - audio.max_dBFS

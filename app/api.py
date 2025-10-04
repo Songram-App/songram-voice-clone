@@ -5,16 +5,12 @@ import torch
 
 app = Flask(__name__)
 
-# Configure the output directory for saving reference audio files
 app.config['OUTPUT_DIR'] = 'app/output'
 
-# Configure the checkpoints directory
 app.config['CHECKPOINTS_DIR'] = 'checkpoints'
 
-# Configure the device (CPU or GPU)
 app.config['DEVICE'] = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# Initialize the VoiceCloningService with configuration
 voice_cloning_service = VoiceCloningService(
     checkpoints_dir=app.config['CHECKPOINTS_DIR'],
     device=app.config['DEVICE'],
@@ -46,7 +42,6 @@ def clone_voice():
     reference_audio_path = os.path.join(app.config['OUTPUT_DIR'], 'reference_input.wav')
     reference_voice.save(reference_audio_path)
     
-    # Check if the file is empty or corrupted
     try:
         import soundfile as sf
         data, samplerate = sf.read(reference_audio_path)
@@ -62,7 +57,6 @@ def clone_voice():
             reference_audio_path, lyrics, target_language, speaker
         )
         
-        # Get relative path for response
         relative_path = os.path.relpath(audio_file_path, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         
         return jsonify({

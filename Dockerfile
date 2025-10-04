@@ -1,21 +1,16 @@
 FROM python:3.9-slim
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the requirements file
 COPY requirements.txt .
 
-# Install git and build tools for dependencies
 RUN apt-get update && apt-get install -y git gcc g++ build-essential && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install unidic and download the dictionary
 RUN pip install unidic && python -m unidic download
 
-# Clone and install OpenVoice V2
 RUN git clone https://github.com/myshell-ai/OpenVoice.git /tmp/OpenVoice && \
     cd /tmp/OpenVoice && \
     pip install -e . && \
@@ -30,7 +25,6 @@ RUN git clone https://github.com/myshell-ai/OpenVoice.git /tmp/OpenVoice && \
 # Add OpenVoice to the Python path
 ENV PYTHONPATH="/app/OpenVoice:$PYTHONPATH"
 
-# Copy the application code
 COPY app ./app
 COPY checkpoints ./checkpoints
 COPY config.py .

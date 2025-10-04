@@ -9,7 +9,6 @@ class VoiceCloningService:
         self.device = device
         self.output_dir = output_dir
         
-        # Ensure output directory exists
         os.makedirs(output_dir, exist_ok=True)
         
         # Initialize the OpenVoice model
@@ -36,13 +35,11 @@ class VoiceCloningService:
         try:
             print(f"Processing reference audio: {reference_audio_path}")
             
-            # Extract speaker embedding from reference audio
             speaker_embedding = self.openvoice_model.extract_speaker_embedding(reference_audio_path)
             
             # Use 'en-newest' as default base speaker for English, or match language
             base_speaker_key = 'en-newest' if target_language.lower().startswith('en') else target_language.lower()
             
-            # Synthesize and convert
             self.openvoice_model.synthesize_audio(
                 lyrics,
                 speaker_embedding,

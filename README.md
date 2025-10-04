@@ -88,3 +88,7 @@ curl -X POST http://localhost:6000/clone-voice \
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for more details.
+
+## Maintainers
+
+This project is actively maintained by [@gbudjeakp](https://github.com/gbudjeakp).
